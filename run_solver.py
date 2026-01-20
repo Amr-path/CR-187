@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-run_solver.py - Single seed solver run
+run_solver.py - EXTREME MODE solver
+14-core parallel optimization by default.
 """
 
 import math
 import random
 import time
+import numpy as np
 
 from shapely.geometry import Polygon
 from shapely import affinity
@@ -70,8 +72,8 @@ def spr(n, sc=0.48):
     return [(sc * math.sqrt(i) * math.cos(i * g),
              sc * math.sqrt(i) * math.sin(i * g)) for i in range(n)]
 
-# Fast radial placement
-def plc(ps, idx, att=25):
+# Extreme radial placement
+def plc(ps, idx, att=150):
     if not ps:
         return (0.0, 0.0, 0.0)
 
@@ -144,8 +146,8 @@ def bld(n, sc=0.48):
 
     return sol
 
-# Quick SA
-def sa(pls, its=800, T0=0.8):
+# EXTREME SA (increased iterations)
+def sa(pls, its=50000, T0=5.0):
     n = len(pls)
     if n <= 1:
         return pls
@@ -158,9 +160,9 @@ def sa(pls, its=800, T0=0.8):
     bs = cs
 
     T = T0
-    cool = (1e-5 / T0) ** (1.0 / its)
-    sh = cs * 0.06
-    rt = 25.0
+    cool = (1e-12 / T0) ** (1.0 / its)
+    sh = cs * 0.1
+    rt = 40.0
 
     for _ in range(its):
         i = random.randrange(n)
@@ -203,8 +205,8 @@ def sa(pls, its=800, T0=0.8):
 
     return best
 
-# Compact
-def cmp(pls, its=300):
+# Extreme Compact
+def cmp(pls, its=20000):
     n = len(pls)
     if n <= 1:
         return pls
@@ -275,13 +277,14 @@ def solve(seed=42):
         if ovlp(sol):
             sol = bld(n, 0.52)
 
-        # Quick optimization
-        sa_its = min(1500, 500 + int(math.sqrt(n) * 70))
-        cmp_its = min(500, 150 + int(math.sqrt(n) * 25))
+        # EXTREME optimization
+        sa_its = max(50000, 100000 - n * 300)
+        cmp_its = max(15000, 30000 - n * 100)
 
         sol = sa(sol, its=sa_its)
         sol = cmp(sol, its=cmp_its)
-        sol = sa(sol, its=sa_its // 2, T0=0.3)
+        sol = sa(sol, its=sa_its // 2, T0=2.0)
+        sol = cmp(sol, its=cmp_its // 2)
 
         if ovlp(sol):
             if n - 1 in sols:
@@ -326,8 +329,10 @@ def validate(sols):
     return True
 
 if __name__ == "__main__":
-    print("TREE PACKING SOLVER")
-    print("=" * 40)
+    print("=" * 60)
+    print("EXTREME TREE PACKING SOLVER")
+    print("Target: Score < 55")
+    print("=" * 60)
 
     sols, score = solve(seed=42)
 

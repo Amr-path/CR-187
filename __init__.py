@@ -1,11 +1,18 @@
 """
-Santa 2025 Christmas Tree Packing Solver v3
+Santa 2025 Christmas Tree Packing Solver v4 - EXTREME MODE
 
-Combines:
-- Official Kaggle greedy radial placement with weighted angles
-- Simulated Annealing optimization
-- Multiple restart capability
-- High-precision geometry
+EXTREME OPTIMIZATION ONLY - No lite options.
+Optimized for 14-core VPS.
+
+Features:
+- Extended Parallel Tempering (16 replicas)
+- CMA-ES + Differential Evolution
+- Ultra-long Simulated Annealing (800K+ iterations)
+- Exhaustive search for small n
+- Multi-phase aggressive compaction
+- 14-core parallel processing by default
+
+Target: Score < 55
 """
 
 from .geometry import (
@@ -35,4 +42,6 @@ from .io_utils import (
     get_output_path,
 )
 
-__version__ = "3.0.0"
+__version__ = "4.0.0"
+__mode__ = "EXTREME"
+__default_cores__ = 14

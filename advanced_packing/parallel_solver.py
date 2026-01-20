@@ -178,17 +178,18 @@ def run_parallel(seeds: List[int], max_n: int = 200, num_cores: int = None) -> T
     return best_score, best_solutions
 
 def main():
-    parser = argparse.ArgumentParser(description="Parallel Tree Packing Solver")
-    parser.add_argument("--cores", type=int, default=None, help="Number of CPU cores")
-    parser.add_argument("--seeds", type=int, default=8, help="Number of seeds to try")
+    parser = argparse.ArgumentParser(description="Parallel Tree Packing Solver - EXTREME MODE")
+    parser.add_argument("--cores", type=int, default=14, help="Number of CPU cores (default: 14)")
+    parser.add_argument("--seeds", type=int, default=14, help="Number of seeds to try (default: 14)")
     parser.add_argument("--max-n", type=int, default=200, help="Maximum n")
     args = parser.parse_args()
 
     print("=" * 60)
-    print("PARALLEL TREE PACKING SOLVER")
+    print("PARALLEL TREE PACKING SOLVER - EXTREME MODE")
+    print(f"Cores: {args.cores} | Seeds: {args.seeds}")
     print("=" * 60)
 
-    seeds = [42, 123, 456, 789, 2025, 1337, 7777, 9999][:args.seeds]
+    seeds = [42, 123, 456, 789, 2025, 1337, 7777, 9999, 31415, 27182, 161803, 14142, 17320, 22360][:args.seeds]
 
     best_score, best_solutions = run_parallel(seeds, args.max_n, args.cores)
 

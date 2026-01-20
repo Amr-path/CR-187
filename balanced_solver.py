@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-balanced_solver.py - Balanced Tree Packing Solver
+balanced_solver.py - EXTREME Tree Packing Solver
 
-Good balance between speed and quality.
-Uses better initial placement + moderate optimization.
+EXTREME MODE - Full optimization.
+No lite options. 14-core optimized.
 """
 
 import math
@@ -73,8 +73,8 @@ def spr(n, sc=0.48):
     return [(sc * math.sqrt(i) * math.cos(i * g),
              sc * math.sqrt(i) * math.sin(i * g)) for i in range(n)]
 
-# Better radial placement
-def plc(ps, idx, att=30):
+# EXTREME radial placement
+def plc(ps, idx, att=180):
     if not ps:
         return (0.0, 0.0, 0.0)
 
@@ -148,8 +148,8 @@ def bld(n, sc=0.48):
 
     return sol
 
-# SA with moderate iterations
-def sa(pls, its=2000, T0=1.0):
+# EXTREME SA iterations
+def sa(pls, its=80000, T0=8.0):
     n = len(pls)
     if n <= 1:
         return pls
@@ -162,9 +162,9 @@ def sa(pls, its=2000, T0=1.0):
     bs = cs
 
     T = T0
-    cool = (1e-6 / T0) ** (1.0 / its)
-    sh = cs * 0.08
-    rt = 35.0
+    cool = (1e-14 / T0) ** (1.0 / its)
+    sh = cs * 0.1
+    rt = 45.0
 
     for it in range(its):
         i = random.randrange(n)
@@ -213,8 +213,8 @@ def sa(pls, its=2000, T0=1.0):
 
     return best
 
-# Compaction
-def cmp(pls, its=800):
+# EXTREME Compaction
+def cmp(pls, its=30000):
     n = len(pls)
     if n <= 1:
         return pls
@@ -287,14 +287,15 @@ class BalancedSolver:
         if ovlp(sol):
             sol = bld(n, 0.52)
 
-        # Moderate optimization - scale with sqrt(n)
-        sa_its = min(3000, 1000 + int(math.sqrt(n) * 150))
-        cmp_its = min(1200, 400 + int(math.sqrt(n) * 60))
+        # EXTREME optimization - scale with n
+        sa_its = max(80000, 150000 - n * 400)
+        cmp_its = max(25000, 50000 - n * 150)
 
         sol = sa(sol, its=sa_its)
         sol = cmp(sol, its=cmp_its)
-        sol = sa(sol, its=sa_its // 2, T0=0.4)
+        sol = sa(sol, its=sa_its // 2, T0=3.0)
         sol = cmp(sol, its=cmp_its // 2)
+        sol = sa(sol, its=sa_its // 3, T0=1.0)
 
         if ovlp(sol):
             if n - 1 in self.sols:
@@ -356,8 +357,10 @@ def validate(sols):
     return True
 
 def main():
-    print("BALANCED SOLVER")
-    print("=" * 40)
+    print("=" * 60)
+    print("EXTREME SOLVER")
+    print("14-core optimized | Target: Score < 55")
+    print("=" * 60)
 
     solver = BalancedSolver(seed=42, verbose=True)
     sols = solver.solve_all(max_n=200)
