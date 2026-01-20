@@ -659,10 +659,11 @@ def validate_all(solutions: Dict[int, Solution]) -> bool:
 def main():
     print("=" * 70)
     print("EXTREME TREE PACKING SOLVER")
-    print("Multi-day optimization for score < 60")
+    print("Multi-day optimization for score < 55")
+    print("14-core parallel processing")
     print("=" * 70)
 
-    seeds = [42, 123, 456, 789, 2025]
+    seeds = [42, 123, 456, 789, 2025, 1337, 7777, 9999, 31415, 27182, 161803, 14142, 17320, 22360]
     best_score = float('inf')
     best_solutions = None
 

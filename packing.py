@@ -30,62 +30,65 @@ Solution = List[Placement]
 
 @dataclass
 class SolverConfig:
-    """Configuration for the solver."""
-    # Greedy placement settings
-    num_placement_attempts: int = 20      # More attempts = better placement (official uses 10)
+    """Configuration for the solver - EXTREME MODE ONLY."""
+    # Greedy placement settings (aggressive)
+    num_placement_attempts: int = 150     # Maximum attempts for best placement
     start_radius: float = 25.0            # Starting distance for greedy placement
-    step_in: float = 0.3                  # Step size moving toward center
-    step_out: float = 0.03                # Fine step backing up after collision
-    
-    # Simulated Annealing settings
+    step_in: float = 0.15                 # Finer step size moving toward center
+    step_out: float = 0.01                # Very fine step backing up after collision
+
+    # Simulated Annealing settings (extreme)
     sa_enabled: bool = True
-    sa_iterations_base: int = 3000        # Base SA iterations per n
-    sa_iterations_scale: float = 1.5      # Scale factor for larger n
-    sa_temp_initial: float = 1.0
-    sa_temp_final: float = 0.0001
-    sa_max_shift: float = 0.2             # Initial max translation
-    sa_max_rotate: float = 45.0           # Initial max rotation
-    sa_decay: float = 0.9995              # Step size decay
-    
-    # Multi-restart
-    num_restarts: int = 1
-    
+    sa_iterations_base: int = 50000       # High base SA iterations per n
+    sa_iterations_scale: float = 3.0      # Higher scale factor for larger n
+    sa_temp_initial: float = 5.0          # Higher initial temp for better exploration
+    sa_temp_final: float = 1e-10          # Very low final temp
+    sa_max_shift: float = 0.25            # Initial max translation
+    sa_max_rotate: float = 50.0           # Initial max rotation
+    sa_decay: float = 0.9998              # Slower step size decay
+
+    # Multi-restart (more restarts)
+    num_restarts: int = 5
+
     seed: int = 42
-    
+
     @classmethod
-    def quick_mode(cls):
+    def extreme_mode(cls):
+        """EXTREME mode - maximum quality optimization."""
         return cls(
-            num_placement_attempts=15,
-            sa_iterations_base=1500,
-            num_restarts=1
+            num_placement_attempts=200,
+            step_in=0.1,
+            step_out=0.005,
+            sa_iterations_base=100000,
+            sa_iterations_scale=4.0,
+            sa_temp_initial=8.0,
+            sa_temp_final=1e-12,
+            sa_max_shift=0.3,
+            sa_max_rotate=55.0,
+            sa_decay=0.9999,
+            num_restarts=8
         )
-    
+
+    @classmethod
+    def default_mode(cls):
+        """Default is now EXTREME mode."""
+        return cls.extreme_mode()
+
+    # Keep these as aliases to extreme mode
     @classmethod
     def standard_mode(cls):
-        return cls(
-            num_placement_attempts=25,
-            sa_iterations_base=4000,
-            num_restarts=2
-        )
-    
+        """Standard mode is now EXTREME mode."""
+        return cls.extreme_mode()
+
     @classmethod
     def aggressive_mode(cls):
-        return cls(
-            num_placement_attempts=40,
-            sa_iterations_base=8000,
-            sa_iterations_scale=2.0,
-            num_restarts=3
-        )
-    
+        """Aggressive mode is now EXTREME mode."""
+        return cls.extreme_mode()
+
     @classmethod
     def maximum_mode(cls):
-        return cls(
-            num_placement_attempts=60,
-            sa_iterations_base=15000,
-            sa_iterations_scale=2.5,
-            sa_temp_final=0.00001,
-            num_restarts=5
-        )
+        """Maximum mode is now EXTREME mode."""
+        return cls.extreme_mode()
 
 
 def generate_weighted_angle() -> float:
